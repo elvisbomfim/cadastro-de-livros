@@ -1,2 +1,5 @@
 .env
 .docker/dbdata/
+/vendor/
+*.log
+.composer/
