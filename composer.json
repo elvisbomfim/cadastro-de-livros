@@ -1,0 +1,28 @@
+{
+    "name": "elvisbomfim/cadastro-de-livros",
+    "description": "App com PHP - Cadastro de Livros",
+    "authors": [
+        {
+            "name": "Elvis Bomfim de Souza",
+            "email": "elvis@bravosite.com.br"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Core\\": "src/Core/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "pestphp/pest": "^4.1"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
