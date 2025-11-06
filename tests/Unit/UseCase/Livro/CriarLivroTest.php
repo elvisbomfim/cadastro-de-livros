@@ -3,6 +3,7 @@
 namespace Tests\Unit\UseCase\Livro;
 
 use Core\UseCase\Livro\CriarLivroUseCase;
+use Core\Domain\Events\EventDispatcherInterface;
 use Core\Domain\Repository\LivroRepositoryInterface;
 use Core\Domain\Entity\Livro;
 use Core\Domain\ValueObject\Titulo;
@@ -16,7 +17,8 @@ describe('Use Case CriarLivro', function () {
     
     test('deve criar um livro com sucesso', function () {
         $repository = Mockery::mock(LivroRepositoryInterface::class);
-        $useCase = new CriarLivroUseCase($repository);
+        $eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $useCase = new CriarLivroUseCase($repository, $eventDispatcher);
         
         $livroEsperado = new Livro(
             titulo: new Titulo('O Segredo da Mente Milionária'),
@@ -29,7 +31,10 @@ describe('Use Case CriarLivro', function () {
         $repository->shouldReceive('create')
             ->once()
             ->andReturn($livroEsperado);
-        
+
+        $eventDispatcher->shouldReceive('dispatch')
+            ->once();
+
         $livro = $useCase->execute(
             'O Segredo da Mente Milionária',
             'Editora Sextante',
@@ -48,7 +53,8 @@ describe('Use Case CriarLivro', function () {
 
     test('deve criar múltiplos livros diferentes com sucesso', function () {
         $repository = Mockery::mock(LivroRepositoryInterface::class);
-        $useCase = new CriarLivroUseCase($repository);
+        $eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $useCase = new CriarLivroUseCase($repository, $eventDispatcher);
         
         $livro1 = new Livro(
             titulo: new Titulo('Dom Casmurro'),
@@ -77,6 +83,9 @@ describe('Use Case CriarLivro', function () {
         $repository->shouldReceive('create')
             ->times(3)
             ->andReturn($livro1, $livro2, $livro3);
+
+        $eventDispatcher->shouldReceive('dispatch')
+            ->times(3);
         
         $resultado1 = $useCase->execute('Dom Casmurro', 'Editora Zênite', 1, 1899, 35.00);
         $resultado2 = $useCase->execute('A Revolta de Atlas', 'Editora Sextante', 1, 1957, 49.90);
@@ -91,7 +100,8 @@ describe('Use Case CriarLivro', function () {
 
     test('deve chamar o repository create uma vez', function () {
         $repository = Mockery::mock(LivroRepositoryInterface::class);
-        $useCase = new CriarLivroUseCase($repository);
+        $eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $useCase = new CriarLivroUseCase($repository, $eventDispatcher);
         
         $livroEsperado = new Livro(
             titulo: new Titulo('Teste'),
@@ -104,6 +114,9 @@ describe('Use Case CriarLivro', function () {
         $repository->shouldReceive('create')
             ->once()
             ->andReturn($livroEsperado);
+
+        $eventDispatcher->shouldReceive('dispatch')
+            ->once();
         
         $useCase->execute('Teste', 'Editora Teste', 1, 2000, 25.00);
     });

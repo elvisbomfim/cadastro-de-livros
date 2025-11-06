@@ -63,7 +63,7 @@ class Livro extends Entity
         $this->edicao = new Edicao($edicao);
     }
 
-    public function adicionarAutor(int $autorId): void
+    public function adicionarAutor(string $autorId): void
     {
         if (in_array($autorId, $this->autores)) {
             throw new EntityValidationException('Autor já adicionado');
@@ -72,7 +72,7 @@ class Livro extends Entity
         $this->autores[] = $autorId;
     }
 
-    public function removerAutor(int $autorId): void
+    public function removerAutor(string $autorId): void
     {
         if (!in_array($autorId, $this->autores)) {
             throw new EntityValidationException('Autor não encontrado');
@@ -88,7 +88,7 @@ class Livro extends Entity
         return $this->autores;
     }
 
-    public function adicionarAssunto(int $assuntoId): void
+    public function adicionarAssunto(string $assuntoId): void
     {
         if (in_array($assuntoId, $this->assuntos)) {
             throw new EntityValidationException('Assunto já adicionado');
@@ -97,7 +97,7 @@ class Livro extends Entity
         $this->assuntos[] = $assuntoId;
     }
 
-    public function removerAssunto(int $assuntoId): void
+    public function removerAssunto(string $assuntoId): void
     {
         if (!in_array($assuntoId, $this->assuntos)) {
             throw new EntityValidationException('Assunto não encontrado');

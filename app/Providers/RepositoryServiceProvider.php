@@ -2,20 +2,18 @@
 
 namespace App\Providers;
 
-use App\Events\LaravelEventDispatcher;
 use App\Repositories\Eloquent\AssuntoRepository;
 use App\Repositories\Eloquent\AutorRepository;
 use App\Repositories\Eloquent\LivroRepository;
-use Core\Domain\Events\EventDispatcherInterface;
 use Core\Domain\Repository\AssuntoRepositoryInterface;
 use Core\Domain\Repository\AutorRepositoryInterface;
 use Core\Domain\Repository\LivroRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class RepositoryServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register services.
      */
     public function register(): void
     {
@@ -33,15 +31,10 @@ class AppServiceProvider extends ServiceProvider
             AssuntoRepositoryInterface::class,
             AssuntoRepository::class
         );
-
-        $this->app->bind(
-            EventDispatcherInterface::class,
-            LaravelEventDispatcher::class
-        );
     }
 
     /**
-     * Bootstrap any application services.
+     * Bootstrap services.
      */
     public function boot(): void
     {

@@ -29,9 +29,9 @@ describe('Relacionamento Livro-Assunto', function () {
             preco: $this->preco
         );
         
-        $livro->adicionarAssunto(1);
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000001');
         
-        expect($livro->assuntos())->toBe([1])
+        expect($livro->assuntos())->toBe(['00000000-0000-0000-0000-000000000001'])
             ->and(count($livro->assuntos()))->toBe(1);
     });
 
@@ -44,11 +44,11 @@ describe('Relacionamento Livro-Assunto', function () {
             preco: $this->preco
         );
         
-        $livro->adicionarAssunto(1);
-        $livro->adicionarAssunto(2);
-        $livro->adicionarAssunto(3);
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000001');
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000002');
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000003');
         
-        expect($livro->assuntos())->toBe([1, 2, 3])
+        expect($livro->assuntos())->toBe(['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000003'])
             ->and(count($livro->assuntos()))->toBe(3);
     });
 
@@ -69,14 +69,14 @@ describe('Relacionamento Livro-Assunto', function () {
             preco: $this->preco
         );
         
-        $livro1->adicionarAssunto(1);
-        $livro1->adicionarAssunto(2);
+        $livro1->adicionarAssunto('00000000-0000-0000-0000-000000000001');
+        $livro1->adicionarAssunto('00000000-0000-0000-0000-000000000002');
         
-        $livro2->adicionarAssunto(2);
-        $livro2->adicionarAssunto(1);
+        $livro2->adicionarAssunto('00000000-0000-0000-0000-000000000002');
+        $livro2->adicionarAssunto('00000000-0000-0000-0000-000000000001');
         
-        expect($livro1->assuntos())->toBe([1, 2])
-            ->and($livro2->assuntos())->toBe([2, 1])
+        expect($livro1->assuntos())->toBe(['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002'])
+            ->and($livro2->assuntos())->toBe(['00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001'])
             ->and($livro1->assuntos())->not()->toBe($livro2->assuntos());
     });
 
@@ -89,9 +89,9 @@ describe('Relacionamento Livro-Assunto', function () {
             preco: $this->preco
         );
 
-        $livro->adicionarAssunto(5);
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000005');
         
-        $livro->adicionarAssunto(5);
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000005');
     })->throws(EntityValidationException::class, 'Assunto já adicionado');
 
     test('deve remover um assunto específico mantendo os outros', function () {
@@ -103,13 +103,13 @@ describe('Relacionamento Livro-Assunto', function () {
             preco: $this->preco
         );
 
-        $livro->adicionarAssunto(1);
-        $livro->adicionarAssunto(2);
-        $livro->adicionarAssunto(3);
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000001');
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000002');
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000003');
 
-        $livro->removerAssunto(2);
+        $livro->removerAssunto('00000000-0000-0000-0000-000000000002');
         
-        expect($livro->assuntos())->toBe([1, 3])
+        expect($livro->assuntos())->toBe(['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000003'])
             ->and(count($livro->assuntos()))->toBe(2);
     });
 
@@ -122,15 +122,15 @@ describe('Relacionamento Livro-Assunto', function () {
             preco: $this->preco
         );
 
-        $livro->adicionarAssunto(1);
-        $livro->adicionarAssunto(2);
-        $livro->adicionarAssunto(3);
-        $livro->adicionarAssunto(4);
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000001');
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000002');
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000003');
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000004');
 
-        $livro->removerAssunto(2);
-        $livro->removerAssunto(4);
+        $livro->removerAssunto('00000000-0000-0000-0000-000000000002');
+        $livro->removerAssunto('00000000-0000-0000-0000-000000000004');
         
-        expect($livro->assuntos())->toBe([1, 3])
+        expect($livro->assuntos())->toBe(['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000003'])
             ->and(count($livro->assuntos()))->toBe(2);
     });
 
@@ -143,7 +143,7 @@ describe('Relacionamento Livro-Assunto', function () {
             preco: $this->preco
         );
 
-        $livro->removerAssunto(999);
+        $livro->removerAssunto('00000000-0000-0000-0000-000000000999');
     })->throws(EntityValidationException::class, 'Assunto não encontrado');
 
     test('deve lançar exceção ao tentar remover diferentes assuntos inexistentes', function () {
@@ -164,13 +164,13 @@ describe('Relacionamento Livro-Assunto', function () {
         );
 
         try {
-            $livro1->removerAssunto(100);
+            $livro1->removerAssunto('00000000-0000-0000-0000-000000000100');
         } catch (EntityValidationException $e) {
             expect($e->getMessage())->toBe('Assunto não encontrado');
         }
         
         try {
-            $livro2->removerAssunto(200);
+            $livro2->removerAssunto('00000000-0000-0000-0000-000000000200');
         } catch (EntityValidationException $e) {
             expect($e->getMessage())->toBe('Assunto não encontrado');
         }
@@ -185,12 +185,12 @@ describe('Relacionamento Livro-Assunto', function () {
             preco: $this->preco
         );
 
-        $livro->adicionarAssunto(1);
-        $livro->adicionarAssunto(2);
-        $livro->removerAssunto(1);
-        $livro->adicionarAssunto(3);
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000001');
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000002');
+        $livro->removerAssunto('00000000-0000-0000-0000-000000000001');
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000003');
         
-        expect($livro->assuntos())->toBe([2, 3])
+        expect($livro->assuntos())->toBe(['00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000003'])
             ->and(count($livro->assuntos()))->toBe(2);
     });
 
@@ -216,13 +216,13 @@ describe('Relacionamento Livro-Assunto', function () {
             preco: $this->preco
         );
 
-        $livro->adicionarAutor(10);
-        $livro->adicionarAutor(20);
-        $livro->adicionarAssunto(1);
-        $livro->adicionarAssunto(2);
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000010');
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000020');
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000001');
+        $livro->adicionarAssunto('00000000-0000-0000-0000-000000000002');
         
-        expect($livro->autores())->toBe([10, 20])
-            ->and($livro->assuntos())->toBe([1, 2])
+        expect($livro->autores())->toBe(['00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000020'])
+            ->and($livro->assuntos())->toBe(['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002'])
             ->and(count($livro->autores()))->toBe(2)
             ->and(count($livro->assuntos()))->toBe(2);
     });
