@@ -9,7 +9,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "Core\\": "src/Core/"
+            "Core\\": "src/Core/",
+            "App\\": "app/"
         }
     },
     "autoload-dev": {
@@ -27,6 +28,7 @@
         }
     },
     "require": {
-        "ramsey/uuid": "^4.9"
+        "ramsey/uuid": "^4.9",
+        "laravel/framework": "^12.37"
     }
 }
