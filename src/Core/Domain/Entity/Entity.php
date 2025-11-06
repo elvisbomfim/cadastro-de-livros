@@ -22,5 +22,10 @@ abstract class Entity
     {
         return (string) $this->id;
     }
+
+    public function getId()
+    {
+        return $this->id;
+    }
   
 }

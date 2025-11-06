@@ -84,10 +84,10 @@ describe('Entidade Livro', function () {
             preco: $this->preco
         );
         
-        $livro->adicionarAutor(10);
-        $livro->adicionarAutor(20);
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000010');
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000020');
         
-        expect($livro->autores())->toBe([10, 20])
+        expect($livro->autores())->toBe(['00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000020'])
             ->and(count($livro->autores()))->toBe(2);
     });
 
@@ -100,9 +100,9 @@ describe('Entidade Livro', function () {
             preco: $this->preco
         );
 
-        $livro->adicionarAutor(50);
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000050');
         
-        $livro->adicionarAutor(50);
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000050');
     })->throws(EntityValidationException::class, 'Autor já adicionado');
     
     test('deve remover um autor do Livro', function () {
@@ -114,12 +114,12 @@ describe('Entidade Livro', function () {
             preco: $this->preco
         );
 
-        $livro->adicionarAutor(10);
-        $livro->adicionarAutor(20);
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000010');
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000020');
 
-        $livro->removerAutor(10);
+        $livro->removerAutor('00000000-0000-0000-0000-000000000010');
         
-        expect($livro->autores())->toBe([20]);
+        expect($livro->autores())->toBe(['00000000-0000-0000-0000-000000000020']);
     });
 
     test('deve criar Livro com diferentes preços em R$', function () {

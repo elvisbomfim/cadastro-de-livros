@@ -29,9 +29,9 @@ describe('Relacionamento Livro-Autor', function () {
             preco: $this->preco
         );
         
-        $livro->adicionarAutor(10);
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000010');
         
-        expect($livro->autores())->toBe([10])
+        expect($livro->autores())->toBe(['00000000-0000-0000-0000-000000000010'])
             ->and(count($livro->autores()))->toBe(1);
     });
 
@@ -44,11 +44,11 @@ describe('Relacionamento Livro-Autor', function () {
             preco: $this->preco
         );
         
-        $livro->adicionarAutor(10);
-        $livro->adicionarAutor(20);
-        $livro->adicionarAutor(30);
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000010');
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000020');
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000030');
         
-        expect($livro->autores())->toBe([10, 20, 30])
+        expect($livro->autores())->toBe(['00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000030'])
             ->and(count($livro->autores()))->toBe(3);
     });
 
@@ -69,14 +69,14 @@ describe('Relacionamento Livro-Autor', function () {
             preco: $this->preco
         );
         
-        $livro1->adicionarAutor(10);
-        $livro1->adicionarAutor(20);
+        $livro1->adicionarAutor('00000000-0000-0000-0000-000000000010');
+        $livro1->adicionarAutor('00000000-0000-0000-0000-000000000020');
         
-        $livro2->adicionarAutor(20);
-        $livro2->adicionarAutor(10);
+        $livro2->adicionarAutor('00000000-0000-0000-0000-000000000020');
+        $livro2->adicionarAutor('00000000-0000-0000-0000-000000000010');
         
-        expect($livro1->autores())->toBe([10, 20])
-            ->and($livro2->autores())->toBe([20, 10])
+        expect($livro1->autores())->toBe(['00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000020'])
+            ->and($livro2->autores())->toBe(['00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000010'])
             ->and($livro1->autores())->not()->toBe($livro2->autores());
     });
 
@@ -89,9 +89,9 @@ describe('Relacionamento Livro-Autor', function () {
             preco: $this->preco
         );
 
-        $livro->adicionarAutor(50);
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000050');
         
-        $livro->adicionarAutor(50);
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000050');
     })->throws(EntityValidationException::class, 'Autor já adicionado');
 
     test('deve remover um autor específico mantendo os outros', function () {
@@ -103,13 +103,13 @@ describe('Relacionamento Livro-Autor', function () {
             preco: $this->preco
         );
 
-        $livro->adicionarAutor(10);
-        $livro->adicionarAutor(20);
-        $livro->adicionarAutor(30);
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000010');
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000020');
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000030');
 
-        $livro->removerAutor(20);
+        $livro->removerAutor('00000000-0000-0000-0000-000000000020');
         
-        expect($livro->autores())->toBe([10, 30])
+        expect($livro->autores())->toBe(['00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000030'])
             ->and(count($livro->autores()))->toBe(2);
     });
 
@@ -122,15 +122,15 @@ describe('Relacionamento Livro-Autor', function () {
             preco: $this->preco
         );
 
-        $livro->adicionarAutor(10);
-        $livro->adicionarAutor(20);
-        $livro->adicionarAutor(30);
-        $livro->adicionarAutor(40);
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000010');
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000020');
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000030');
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000040');
 
-        $livro->removerAutor(20);
-        $livro->removerAutor(40);
+        $livro->removerAutor('00000000-0000-0000-0000-000000000020');
+        $livro->removerAutor('00000000-0000-0000-0000-000000000040');
         
-        expect($livro->autores())->toBe([10, 30])
+        expect($livro->autores())->toBe(['00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000030'])
             ->and(count($livro->autores()))->toBe(2);
     });
 
@@ -143,7 +143,7 @@ describe('Relacionamento Livro-Autor', function () {
             preco: $this->preco
         );
 
-        $livro->removerAutor(999);
+        $livro->removerAutor('00000000-0000-0000-0000-000000000999');
     })->throws(EntityValidationException::class, 'Autor não encontrado');
 
     test('deve lançar exceção ao tentar remover diferentes autores inexistentes', function () {
@@ -164,13 +164,13 @@ describe('Relacionamento Livro-Autor', function () {
         );
 
         try {
-            $livro1->removerAutor(100);
+            $livro1->removerAutor('00000000-0000-0000-0000-000000000100');
         } catch (EntityValidationException $e) {
             expect($e->getMessage())->toBe('Autor não encontrado');
         }
         
         try {
-            $livro2->removerAutor(200);
+            $livro2->removerAutor('00000000-0000-0000-0000-000000000200');
         } catch (EntityValidationException $e) {
             expect($e->getMessage())->toBe('Autor não encontrado');
         }
@@ -185,12 +185,12 @@ describe('Relacionamento Livro-Autor', function () {
             preco: $this->preco
         );
 
-        $livro->adicionarAutor(10);
-        $livro->adicionarAutor(20);
-        $livro->removerAutor(10);
-        $livro->adicionarAutor(30);
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000010');
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000020');
+        $livro->removerAutor('00000000-0000-0000-0000-000000000010');
+        $livro->adicionarAutor('00000000-0000-0000-0000-000000000030');
         
-        expect($livro->autores())->toBe([20, 30])
+        expect($livro->autores())->toBe(['00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000030'])
             ->and(count($livro->autores()))->toBe(2);
     });
 
