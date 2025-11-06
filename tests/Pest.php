@@ -1,5 +1,7 @@
 <?php
 
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -43,3 +45,7 @@ function something()
 {
     // ..
 }
+
+uses()->beforeEach(function () {
+    Mockery::close();
+})->in('Unit/UseCase');
