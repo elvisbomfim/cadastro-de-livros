@@ -19,6 +19,7 @@ class AssuntoRepository implements AssuntoRepositoryInterface
 
         return $this->toEntity($assuntoModel);
     }
+    
 
     public function findById(string $id): ?Assunto
     {

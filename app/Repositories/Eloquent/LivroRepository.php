@@ -3,14 +3,17 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Livro as LivroModel;
+use App\Repositories\Presenters\PaginationPresenter;
 use Core\Domain\Entity\Livro;
 use Core\Domain\Repository\LivroRepositoryInterface;
+use Core\Domain\Repository\PaginationInterface;
 use Core\Domain\ValueObject\Titulo;
 use Core\Domain\ValueObject\Editora;
 use Core\Domain\ValueObject\Edicao;
 use Core\Domain\ValueObject\AnoPublicacao;
 use Core\Domain\ValueObject\Moeda;
 use Core\Domain\ValueObject\Uuid;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class LivroRepository implements LivroRepositoryInterface
 {
@@ -107,6 +110,34 @@ class LivroRepository implements LivroRepositoryInterface
         $assuntosProperty->setValue($livro, $livroModel->assuntos->pluck('id')->toArray());
 
         return $livro;
+    }
+
+    public function paginate(string $filter = '', string $order = 'DESC', int $page = 1, int $totalPage = 15): PaginationInterface
+    {
+        $query = LivroModel::with(['autors', 'assuntos']);
+
+        if ($filter !== '') {
+            $query->where('titulo', 'like', "%{$filter}%");
+        }
+
+        $orderBy = strtoupper($order) === 'ASC' ? 'asc' : 'desc';
+        $query->orderBy('created_at', $orderBy);
+
+        $paginator = $query->paginate($totalPage, ['*'], 'page', $page);
+
+        $items = $paginator->getCollection()->map(function ($livroModel) {
+            return $this->toEntity($livroModel);
+        })->toArray();
+
+        return new PaginationPresenter(
+            new LengthAwarePaginator(
+                $items,
+                $paginator->total(),
+                $paginator->perPage(),
+                $paginator->currentPage(),
+                ['path' => request()?->url() ?? '/', 'query' => request()?->query() ?? []]
+            )
+        );
     }
 }
 

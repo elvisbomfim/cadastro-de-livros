@@ -2,10 +2,12 @@
 
 namespace Core\Domain\Events;
 
+use Core\Domain\Entity\Livro;
+
 class LivroCriadoEvent implements EventInterface
 {
     public function __construct(
-        public protected Livro $livro,
+        protected Livro $livro,
     ) {}
 
     public function getEventName(): string
@@ -16,5 +18,10 @@ class LivroCriadoEvent implements EventInterface
     public function getPayload(): array
     {
         return ['livro' => $this->livro];
+    }
+
+    public function getLivro(): Livro
+    {
+        return $this->livro;
     }
 }

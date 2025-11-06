@@ -132,4 +132,72 @@ describe('Eloquent Repository - LivroRepositoryInterface', function () {
         expect($livroEncontrado)->toBeNull();
     });
 
+    test('deve paginar livros através do repositório', function () {
+        $repository = app(LivroRepositoryInterface::class);
+        
+        // Criar múltiplos livros
+        for ($i = 1; $i <= 20; $i++) {
+            $livro = new Livro(
+                titulo: new Titulo("Livro {$i}"),
+                editora: new Editora('Editora Globo'),
+                edicao: new Edicao(1),
+                anoPublicacao: new AnoPublicacao(1899 + $i),
+                preco: new Moeda(35.50 + $i)
+            );
+            $repository->create($livro);
+        }
+
+        $pagination = $repository->paginate('', 'DESC', 1, 10);
+
+        expect($pagination->total())->toBe(20)
+            ->and($pagination->perPage())->toBe(10)
+            ->and($pagination->currentPage())->toBe(1)
+            ->and($pagination->lastPage())->toBe(2)
+            ->and($pagination->firstPage())->toBe(1)
+            ->and(count($pagination->items()))->toBe(10);
+    });
+
+    test('deve filtrar livros na paginação', function () {
+        $repository = app(LivroRepositoryInterface::class);
+        
+        $livro1 = new Livro(
+            titulo: new Titulo('Dom Casmurro'),
+            editora: new Editora('Editora Globo'),
+            edicao: new Edicao(1),
+            anoPublicacao: new AnoPublicacao(1899),
+            preco: new Moeda(35.50)
+        );
+
+        $livro2 = new Livro(
+            titulo: new Titulo('Memórias Póstumas'),
+            editora: new Editora('Editora Globo'),
+            edicao: new Edicao(1),
+            anoPublicacao: new AnoPublicacao(1881),
+            preco: new Moeda(40.00)
+        );
+
+        $repository->create($livro1);
+        $repository->create($livro2);
+
+        $pagination = $repository->paginate('Dom', 'DESC', 1, 15);
+
+        expect($pagination->total())->toBe(1)
+            ->and(count($pagination->items()))->toBe(1);
+    });
+
+    test('deve retornar paginação vazia quando não há livros', function () {
+        $repository = app(LivroRepositoryInterface::class);
+
+        $pagination = $repository->paginate('', 'DESC', 1, 15);
+
+        expect($pagination->total())->toBe(0)
+            ->and($pagination->perPage())->toBe(15)
+            ->and($pagination->currentPage())->toBe(1)
+            ->and($pagination->lastPage())->toBe(1)
+            ->and($pagination->firstPage())->toBe(1)
+            ->and($pagination->from())->toBe(0)
+            ->and($pagination->to())->toBe(0)
+            ->and(count($pagination->items()))->toBe(0);
+    });
+
 })->group('Eloquent', 'Feature', 'Repository', 'Livro');
