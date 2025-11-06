@@ -2,32 +2,15 @@
 
 namespace Core\Domain\ValueObject;
 
-use InvalidArgumentException;
-
-class Titulo
+class Titulo extends TextValueObject
 {
-    private const MAX_LENGTH = 40;
-
-    public function __construct(private string $value)
+    protected function getErrorMessageEmpty(): string
     {
-        $this->validate();
+        return 'Título não pode ser vazio.';
     }
 
-    public function value(): string
+    protected function getErrorMessageMaxLength(): string
     {
-        return $this->value;
-    }
-
-    private function validate(): void
-    {
-        if (strlen($this->value) === 0) {
-            throw new InvalidArgumentException('Título não pode ser vazio.');
-        }
-
-        if (strlen($this->value) > self::MAX_LENGTH) {
-            throw new InvalidArgumentException(
-                sprintf('Título não pode ter mais de %d caracteres.', self::MAX_LENGTH)
-            );
-        }
+        return 'Título não pode ter mais de %d caracteres.';
     }
 }

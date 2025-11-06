@@ -10,7 +10,9 @@
     "autoload": {
         "psr-4": {
             "Core\\": "src/Core/",
-            "App\\": "app/"
+            "App\\": "app/",
+            "Database\\Seeders\\": "database/seeders/",
+            "Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
@@ -20,7 +22,8 @@
     },
     "require-dev": {
         "pestphp/pest": "^4.1",
-        "mockery/mockery": "^1.6"
+        "mockery/mockery": "^1.6",
+        "fakerphp/faker": "^1.24"
     },
     "config": {
         "allow-plugins": {
