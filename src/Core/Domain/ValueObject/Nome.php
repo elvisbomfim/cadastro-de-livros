@@ -2,28 +2,15 @@
 
 namespace Core\Domain\ValueObject;
 
-use InvalidArgumentException;
-
-class Nome
+class Nome extends TextValueObject
 {
-    private const MAX_LENGTH = 40;
-
-    public function __construct(private string $value)
+    protected function getErrorMessageEmpty(): string
     {
-        $this->validate();
+        return 'Nome não pode ser vazio.';
     }
 
-    public function value(): string
+    protected function getErrorMessageMaxLength(): string
     {
-        return $this->value;
-    }
-
-    private function validate(): void
-    {
-        if (strlen($this->value) > self::MAX_LENGTH) {
-            throw new InvalidArgumentException(
-                sprintf('Nome não pode ter mais de %d caracteres.', self::MAX_LENGTH)
-            );
-        }
+        return 'Nome não pode ter mais de %d caracteres.';
     }
 }

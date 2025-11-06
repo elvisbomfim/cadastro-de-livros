@@ -35,14 +35,23 @@ class LivroController extends Controller
 
         $pagination = $this->repository->paginate($filter, $order, $page, $perPage);
 
-        $items = array_map(function ($livro) {
+        $livrosModel = \App\Models\Livro::with(['autors', 'assuntos'])
+            ->whereIn('id', array_map(fn($l) => $l->getId()->value(), $pagination->items()))
+            ->get()
+            ->keyBy('id');
+
+        $items = array_map(function ($livro) use ($livrosModel) {
+            $model = $livrosModel->get($livro->getId()->value());
             return [
                 'id' => $livro->getId()->value(),
                 'titulo' => $livro->getTitulo()->value(),
                 'editora' => $livro->getEditora()->value(),
                 'edicao' => $livro->getEdicao()->value(),
                 'ano_publicacao' => $livro->getAnoPublicacao()->value(),
-                'preco' => $livro->getPreco()->value(),
+                'preco' => $livro->getPreco()->formatar(),
+                'preco_value' => $livro->getPreco()->value(),
+                'autores' => $model ? $model->autors->map(fn($a) => ['id' => $a->id, 'nome' => $a->nome])->toArray() : [],
+                'assuntos' => $model ? $model->assuntos->map(fn($a) => ['id' => $a->id, 'descricao' => $a->descricao])->toArray() : [],
             ];
         }, $pagination->items());
 
@@ -71,6 +80,23 @@ class LivroController extends Controller
                 preco: (float) ($request->input('preco') ?? 0)
             );
 
+            // Adicionar relacionamentos usando o modelo diretamente
+            $autoresIds = $request->input('autores', []);
+            $assuntosIds = $request->input('assuntos', []);
+            
+            $livroModel = \App\Models\Livro::find($livro->getId()->value());
+            if ($livroModel) {
+                if (!empty($autoresIds)) {
+                    $livroModel->autors()->sync($autoresIds);
+                }
+                if (!empty($assuntosIds)) {
+                    $livroModel->assuntos()->sync($assuntosIds);
+                }
+            }
+            
+            // Recarregar com relacionamentos
+            $livroModel = \App\Models\Livro::with(['autors', 'assuntos'])->find($livro->getId()->value());
+
             return response()->json([
                 'data' => [
                     'id' => $livro->getId()->value(),
@@ -78,7 +104,10 @@ class LivroController extends Controller
                     'editora' => $livro->getEditora()->value(),
                     'edicao' => $livro->getEdicao()->value(),
                     'ano_publicacao' => $livro->getAnoPublicacao()->value(),
-                    'preco' => $livro->getPreco()->value(),
+                    'preco' => $livro->getPreco()->formatar(),
+                'preco_value' => $livro->getPreco()->value(),
+                    'autores' => $livroModel ? $livroModel->autors->map(fn($a) => ['id' => $a->id, 'nome' => $a->nome])->toArray() : [],
+                    'assuntos' => $livroModel ? $livroModel->assuntos->map(fn($a) => ['id' => $a->id, 'descricao' => $a->descricao])->toArray() : [],
                 ],
             ], 201);
         } catch (EntityValidationException | InvalidArgumentException $e) {
@@ -93,6 +122,8 @@ class LivroController extends Controller
         try {
             $livro = $this->listarLivroUseCase->execute($id);
 
+            $livroModel = \App\Models\Livro::with(['autors', 'assuntos'])->find($livro->getId()->value());
+
             return response()->json([
                 'data' => [
                     'id' => $livro->getId()->value(),
@@ -100,7 +131,10 @@ class LivroController extends Controller
                     'editora' => $livro->getEditora()->value(),
                     'edicao' => $livro->getEdicao()->value(),
                     'ano_publicacao' => $livro->getAnoPublicacao()->value(),
-                    'preco' => $livro->getPreco()->value(),
+                    'preco' => $livro->getPreco()->formatar(),
+                'preco_value' => $livro->getPreco()->value(),
+                    'autores' => $livroModel ? $livroModel->autors->map(fn($a) => ['id' => $a->id, 'nome' => $a->nome])->toArray() : [],
+                    'assuntos' => $livroModel ? $livroModel->assuntos->map(fn($a) => ['id' => $a->id, 'descricao' => $a->descricao])->toArray() : [],
                 ],
             ], 200);
         } catch (LivroNaoEncontradoException $e) {
@@ -122,6 +156,21 @@ class LivroController extends Controller
                 preco: (float) ($request->input('preco') ?? 0)
             );
 
+            // Atualizar relacionamentos usando o modelo diretamente
+            $autoresIds = $request->input('autores', []);
+            $assuntosIds = $request->input('assuntos', []);
+            
+            $livroModel = \App\Models\Livro::find($livro->getId()->value());
+            if ($livroModel) {
+                $livroModel->autors()->sync($autoresIds);
+                $livroModel->assuntos()->sync($assuntosIds);
+            }
+            
+            // Recarregar o livro com relacionamentos atualizados
+            $livro = $this->repository->findById($id);
+            
+            $livroModel = \App\Models\Livro::with(['autors', 'assuntos'])->find($livro->getId()->value());
+
             return response()->json([
                 'data' => [
                     'id' => $livro->getId()->value(),
@@ -129,7 +178,10 @@ class LivroController extends Controller
                     'editora' => $livro->getEditora()->value(),
                     'edicao' => $livro->getEdicao()->value(),
                     'ano_publicacao' => $livro->getAnoPublicacao()->value(),
-                    'preco' => $livro->getPreco()->value(),
+                    'preco' => $livro->getPreco()->formatar(),
+                'preco_value' => $livro->getPreco()->value(),
+                    'autores' => $livroModel ? $livroModel->autors->map(fn($a) => ['id' => $a->id, 'nome' => $a->nome])->toArray() : [],
+                    'assuntos' => $livroModel ? $livroModel->assuntos->map(fn($a) => ['id' => $a->id, 'descricao' => $a->descricao])->toArray() : [],
                 ],
             ], 200);
         } catch (LivroNaoEncontradoException $e) {
