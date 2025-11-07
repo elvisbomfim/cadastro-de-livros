@@ -310,6 +310,25 @@ Isso abrirá um assistente interativo para criar commits seguindo o padrão Conv
 
 O projeto utiliza **Husky** e **Commitlint** para validar automaticamente os commits. Se um commit não seguir o padrão, ele será rejeitado com uma mensagem de erro explicativa.
 
+##### O que é o Husky?
+
+**Husky** é uma ferramenta que facilita o uso de Git hooks. Ele permite executar scripts automaticamente em eventos do Git (como antes de fazer commit, push, etc.).
+
+**No projeto:**
+- O Husky está configurado para executar o Commitlint antes de cada commit
+- Isso garante que todas as mensagens de commit sigam o padrão Conventional Commits
+- Se a mensagem não estiver no formato correto, o commit será bloqueado automaticamente
+
+**Como funciona:**
+1. Quando você executa `git commit`, o Husky intercepta o comando
+2. O hook `commit-msg` é executado automaticamente
+3. O Commitlint valida a mensagem do commit
+4. Se válida: o commit é aceito
+5. Se inválida: o commit é rejeitado com uma mensagem de erro explicando o problema
+
+**Instalação automática:**
+O Husky é instalado automaticamente quando você executa `npm install` através do script `prepare` no `package.json`.
+
 ### Scripts Disponíveis
 
 #### Com Docker
@@ -361,4 +380,4 @@ Este projeto é privado e de uso pessoal.
 
 ---
 
-Desenvolvido com ❤️ usando Laravel e Vue.js
+Desenvolvido com ❤️ usando PHP, Laravel e Vue.js
