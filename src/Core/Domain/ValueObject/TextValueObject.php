@@ -22,7 +22,30 @@ abstract class TextValueObject
     protected function normalize(): void
     {
         $this->value = trim($this->value);
-        $this->value = mb_convert_case($this->value, MB_CASE_TITLE, 'UTF-8');
+        
+        if (empty($this->value)) {
+            return;
+        }
+        
+        $preposicoes = ['de', 'da', 'do', 'das', 'dos', 'em', 'na', 'no', 'nas', 'nos', 'a', 'ao', 'aos', 'para', 'por', 'com', 'sem', 'sob', 'sobre', 'entre', 'ante', 'até', 'contra', 'desde', 'perante', 'trás'];
+        
+        $words = explode(' ', $this->value);
+        $normalized = [];
+        
+        foreach ($words as $index => $word) {
+            $wordLower = mb_strtolower($word, 'UTF-8');
+            
+            $uniqueChars = count_chars($word, 3);
+            if (strlen($word) > 0 && strlen($uniqueChars) === 1) {
+                $normalized[] = $word;
+            } elseif ($index === 0 || !in_array($wordLower, $preposicoes)) {
+                $normalized[] = mb_convert_case($word, MB_CASE_TITLE, 'UTF-8');
+            } else {
+                $normalized[] = $wordLower;
+            }
+        }
+        
+        $this->value = implode(' ', $normalized);
     }
 
     protected function validate(): void

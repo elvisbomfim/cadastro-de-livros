@@ -19,7 +19,12 @@
                 </h2>
             </div>
 
-            <div class="px-6 py-8">
+            <div v-if="initialLoading" class="px-6 py-12 text-center">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p class="mt-4 text-gray-600">Carregando dados...</p>
+            </div>
+
+            <div v-else class="px-6 py-8">
                 <form @submit.prevent="submit" class="space-y-6">
                     <div>
                         <label for="descricao" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -85,11 +90,15 @@ const form = ref({
 });
 
 const loading = ref(false);
+const initialLoading = ref(true);
 const error = ref(null);
 const errors = ref({});
 
 const loadAssunto = async () => {
-    if (!isEdit.value) return;
+    if (!isEdit.value) {
+        initialLoading.value = false;
+        return;
+    }
     
     loading.value = true;
     try {
@@ -102,6 +111,7 @@ const loadAssunto = async () => {
         error.value = err.response?.data?.message || 'Erro ao carregar assunto';
     } finally {
         loading.value = false;
+        initialLoading.value = false;
     }
 };
 

@@ -55,7 +55,7 @@ describe('Entidade Autor', function () {
         $nomeVazio = new Nome('');
         
         new Autor(nome: $nomeVazio);
-    })->throws(EntityValidationException::class);
+    })->throws(\InvalidArgumentException::class);
 
     test('deve validar que o nome não pode exceder 40 caracteres', function () {
         $nomeLongo = new Nome(str_repeat('A', 41));

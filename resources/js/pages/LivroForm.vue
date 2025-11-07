@@ -19,7 +19,12 @@
                 </h2>
             </div>
 
-            <div class="px-6 py-8">
+            <div v-if="initialLoading" class="px-6 py-12 text-center">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p class="mt-4 text-gray-600">Carregando dados...</p>
+            </div>
+
+            <div v-else class="px-6 py-8">
                 <form @submit.prevent="submit" class="space-y-6">
                     <!-- Título -->
                     <div>
@@ -229,6 +234,7 @@ const form = ref({
 });
 
 const loading = ref(false);
+const initialLoading = ref(true);
 const loadingAutores = ref(false);
 const loadingAssuntos = ref(false);
 const error = ref(null);
@@ -236,15 +242,27 @@ const errors = ref({});
 const autores = ref([]);
 const assuntos = ref([]);
 
+let autoresLoaded = false;
+let assuntosLoaded = false;
+
+const checkInitialLoading = () => {
+    if (!isEdit.value && autoresLoaded && assuntosLoaded) {
+        initialLoading.value = false;
+    }
+};
+
 const loadAutores = async () => {
     loadingAutores.value = true;
     try {
         const response = await autorService.list();
         autores.value = response.data;
+        autoresLoaded = true;
     } catch (err) {
         console.error('Erro ao carregar autores:', err);
+        autoresLoaded = true; // Marcar como carregado mesmo em caso de erro
     } finally {
         loadingAutores.value = false;
+        checkInitialLoading();
     }
 };
 
@@ -253,15 +271,21 @@ const loadAssuntos = async () => {
     try {
         const response = await assuntoService.list();
         assuntos.value = response.data;
+        assuntosLoaded = true;
     } catch (err) {
         console.error('Erro ao carregar assuntos:', err);
+        assuntosLoaded = true; // Marcar como carregado mesmo em caso de erro
     } finally {
         loadingAssuntos.value = false;
+        checkInitialLoading();
     }
 };
 
 const loadLivro = async () => {
-    if (!isEdit.value) return;
+    if (!isEdit.value) {
+        // Em modo de criação, espera autores e assuntos serem carregados
+        return;
+    }
     
     loading.value = true;
     try {
@@ -280,6 +304,10 @@ const loadLivro = async () => {
         error.value = err.response?.data?.message || 'Erro ao carregar livro';
     } finally {
         loading.value = false;
+        // Em modo de edição, desativa loading quando livro for carregado
+        if (autoresLoaded && assuntosLoaded) {
+            initialLoading.value = false;
+        }
     }
 };
 

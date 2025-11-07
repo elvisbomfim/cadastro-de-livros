@@ -55,7 +55,7 @@ describe('Entidade Assunto', function () {
         $descricaoVazia = new Descricao('');
         
         new Assunto(descricao: $descricaoVazia);
-    })->throws(EntityValidationException::class);
+    })->throws(\InvalidArgumentException::class);
 
     test('deve validar que a descrição não pode exceder 40 caracteres', function () {
         $descricaoLonga = new Descricao(str_repeat('A', 41));

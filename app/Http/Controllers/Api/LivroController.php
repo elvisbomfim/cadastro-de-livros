@@ -162,13 +162,15 @@ class LivroController extends Controller
             
             $livroModel = \App\Models\Livro::find($livro->getId()->value());
             if ($livroModel) {
-                $livroModel->autors()->sync($autoresIds);
-                $livroModel->assuntos()->sync($assuntosIds);
+                if (!empty($autoresIds)) {
+                    $livroModel->autors()->sync($autoresIds);
+                }
+                if (!empty($assuntosIds)) {
+                    $livroModel->assuntos()->sync($assuntosIds);
+                }
             }
             
             // Recarregar o livro com relacionamentos atualizados
-            $livro = $this->repository->findById($id);
-            
             $livroModel = \App\Models\Livro::with(['autors', 'assuntos'])->find($livro->getId()->value());
 
             return response()->json([
