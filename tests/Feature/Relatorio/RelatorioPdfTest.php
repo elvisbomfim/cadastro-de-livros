@@ -53,10 +53,12 @@ describe('Relatórios PDF', function () {
         $response = $this->get('/relatorios/livros-por-categoria/pdf');
 
         $response->assertStatus(200)
-            ->assertHeader('Content-Type', 'application/pdf')
-            ->assertHeader('Content-Disposition', function ($value) {
-                return str_contains($value, 'attachment') && str_contains($value, 'livros-por-categoria.pdf');
-            });
+            ->assertHeader('Content-Type', 'application/pdf');
+        
+        $contentDisposition = $response->headers->get('Content-Disposition');
+        expect($contentDisposition)
+            ->toContain('attachment')
+            ->toContain('livros-por-categoria.pdf');
     });
 
     test('deve baixar PDF de ficha detalhada do livro', function () {
@@ -65,10 +67,12 @@ describe('Relatórios PDF', function () {
         $response = $this->get("/relatorios/livro/{$livroId}/ficha/pdf");
 
         $response->assertStatus(200)
-            ->assertHeader('Content-Type', 'application/pdf')
-            ->assertHeader('Content-Disposition', function ($value) use ($livroId) {
-                return str_contains($value, 'attachment') && str_contains($value, "ficha-livro-{$livroId}.pdf");
-            });
+            ->assertHeader('Content-Type', 'application/pdf');
+        
+        $contentDisposition = $response->headers->get('Content-Disposition');
+        expect($contentDisposition)
+            ->toContain('attachment')
+            ->toContain("ficha-livro-{$livroId}.pdf");
     });
 
     test('deve retornar 404 ao tentar baixar ficha de livro inexistente', function () {
@@ -83,10 +87,12 @@ describe('Relatórios PDF', function () {
         $response = $this->get('/relatorios/por-autor/pdf');
 
         $response->assertStatus(200)
-            ->assertHeader('Content-Type', 'application/pdf')
-            ->assertHeader('Content-Disposition', function ($value) {
-                return str_contains($value, 'attachment') && str_contains($value, 'relatorio-por-autor.pdf');
-            });
+            ->assertHeader('Content-Type', 'application/pdf');
+        
+        $contentDisposition = $response->headers->get('Content-Disposition');
+        expect($contentDisposition)
+            ->toContain('attachment')
+            ->toContain('relatorio-por-autor.pdf');
     });
 
     test('deve retornar conteúdo PDF válido para livros por categoria', function () {
