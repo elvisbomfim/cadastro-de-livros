@@ -123,10 +123,11 @@ const submit = async () => {
     try {
         if (isEdit.value) {
             await assuntoService.update(route.params.id, form.value);
+            router.push({ path: '/assuntos', query: { success: 'Assunto atualizado com sucesso!' } });
         } else {
             await assuntoService.create(form.value);
+            router.push({ path: '/assuntos', query: { success: 'Assunto criado com sucesso!' } });
         }
-        router.push('/assuntos');
     } catch (err) {
         if (err.response?.status === 422) {
             const message = err.response.data.message;

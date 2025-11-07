@@ -123,10 +123,11 @@ const submit = async () => {
     try {
         if (isEdit.value) {
             await autorService.update(route.params.id, form.value);
+            router.push({ path: '/autores', query: { success: 'Autor atualizado com sucesso!' } });
         } else {
             await autorService.create(form.value);
+            router.push({ path: '/autores', query: { success: 'Autor criado com sucesso!' } });
         }
-        router.push('/autores');
     } catch (err) {
         if (err.response?.status === 422) {
             const message = err.response.data.message;
