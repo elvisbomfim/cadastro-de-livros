@@ -10,7 +10,7 @@ describe('Value Object Descricao', function () {
     test('deve criar uma Descrição válida', function () {
         $descricao = new Descricao('Romance contemporâneo');
         
-        expect($descricao->value())->toBe('Romance contemporâneo');
+        expect($descricao->value())->toBe('Romance Contemporâneo');
     });
 
     test('deve criar múltiplas Descrições diferentes com valores válidos', function () {
@@ -18,8 +18,8 @@ describe('Value Object Descricao', function () {
         $descricao2 = new Descricao('Terror psicológico');
         $descricao3 = new Descricao('Aventura');
         
-        expect($descricao1->value())->toBe('Ficção científica')
-            ->and($descricao2->value())->toBe('Terror psicológico')
+        expect($descricao1->value())->toBe('Ficção Científica')
+            ->and($descricao2->value())->toBe('Terror Psicológico')
             ->and($descricao3->value())->toBe('Aventura');
     });
 

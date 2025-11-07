@@ -5,6 +5,8 @@ import AutoresList from '../pages/AutoresList.vue';
 import AutorForm from '../pages/AutorForm.vue';
 import AssuntosList from '../pages/AssuntosList.vue';
 import AssuntoForm from '../pages/AssuntoForm.vue';
+import RelatoriosLivrosPorCategoria from '../pages/RelatoriosLivrosPorCategoria.vue';
+import RelatoriosPorAutor from '../pages/RelatoriosPorAutor.vue';
 
 const routes = [
     {
@@ -58,6 +60,16 @@ const routes = [
         name: 'assunto.edit',
         component: AssuntoForm,
         props: true
+    },
+    {
+        path: '/relatorios/livros-por-categoria',
+        name: 'relatorios.livros-por-categoria',
+        component: RelatoriosLivrosPorCategoria
+    },
+    {
+        path: '/relatorios/por-autor',
+        name: 'relatorios.por-autor',
+        component: RelatoriosPorAutor
     },
 ];
 

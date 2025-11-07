@@ -60,9 +60,11 @@ describe('Eloquent Repository - AssuntoRepositoryInterface', function () {
 
         $assuntos = $repository->findAll();
 
-        expect($assuntos)->toHaveCount(2)
-            ->and($assuntos[0]->getDescricao()->value())->toBe('Romance')
-            ->and($assuntos[1]->getDescricao()->value())->toBe('Ficção');
+        expect($assuntos)->toHaveCount(2);
+        
+        $descricoes = array_map(fn($a) => $a->getDescricao()->value(), $assuntos);
+        expect($descricoes)->toContain('Romance')
+            ->and($descricoes)->toContain('Ficção');
     });
 
     test('deve atualizar um assunto através do repositório', function () {

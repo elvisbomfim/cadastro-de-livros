@@ -6,10 +6,12 @@ use App\Events\LaravelEventDispatcher;
 use App\Repositories\Eloquent\AssuntoRepository;
 use App\Repositories\Eloquent\AutorRepository;
 use App\Repositories\Eloquent\LivroRepository;
+use App\Repositories\Eloquent\RelatorioRepository;
 use Core\Domain\Events\EventDispatcherInterface;
 use Core\Domain\Repository\AssuntoRepositoryInterface;
 use Core\Domain\Repository\AutorRepositoryInterface;
 use Core\Domain\Repository\LivroRepositoryInterface;
+use Core\Domain\Repository\RelatorioRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -37,6 +39,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             EventDispatcherInterface::class,
             LaravelEventDispatcher::class
+        );
+
+        $this->app->bind(
+            RelatorioRepositoryInterface::class,
+            RelatorioRepository::class
         );
     }
 

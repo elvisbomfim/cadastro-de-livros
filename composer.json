@@ -33,6 +33,7 @@
     "require": {
         "ramsey/uuid": "^4.9",
         "laravel/framework": "^12.37",
-        "laravel/sanctum": "^4.0"
+        "laravel/sanctum": "^4.0",
+        "barryvdh/laravel-dompdf": "^3.1"
     }
 }

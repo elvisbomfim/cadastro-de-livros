@@ -4,7 +4,7 @@ namespace Core\Domain\Repository;
 
 use Core\Domain\Entity\Assunto;
 
-interface AssuntoRepositoryInterface
+interface AssuntoRepositoryInterface 
 {
     public function create(Assunto $assunto): Assunto;
     public function findById(string $id): ?Assunto;

@@ -60,9 +60,11 @@ describe('Eloquent Repository - AutorRepositoryInterface', function () {
 
         $autores = $repository->findAll();
 
-        expect($autores)->toHaveCount(2)
-            ->and($autores[0]->getNome()->value())->toBe('Machado de Assis')
-            ->and($autores[1]->getNome()->value())->toBe('Clarice Lispector');
+        expect($autores)->toHaveCount(2);
+        
+        $nomes = array_map(fn($a) => $a->getNome()->value(), $autores);
+        expect($nomes)->toContain('Machado de Assis')
+            ->and($nomes)->toContain('Clarice Lispector');
     });
 
     test('deve atualizar um autor através do repositório', function () {

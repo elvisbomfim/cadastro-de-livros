@@ -14,6 +14,23 @@
         </div>
 
         <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input
+                        v-model="filter"
+                        @input="debounceSearch"
+                        type="text"
+                        placeholder="Buscar autores por nome..."
+                        class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                    />
+                </div>
+            </div>
+
             <div class="overflow-x-auto">
                 <div v-if="loading" class="text-center py-12">
                     <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -26,11 +43,11 @@
                     </div>
                 </div>
 
-                <div v-else-if="autores.length === 0" class="text-center py-12">
+                <div v-else-if="filteredAutores.length === 0" class="text-center py-12">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    <p class="mt-4 text-gray-500">Nenhum autor cadastrado</p>
+                    <p class="mt-4 text-gray-500">{{ filter ? 'Nenhum autor encontrado' : 'Nenhum autor cadastrado' }}</p>
                 </div>
 
                 <table v-else class="min-w-full divide-y divide-gray-200">
@@ -45,7 +62,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="autor in autores" :key="autor.id" class="hover:bg-gray-50 transition-colors">
+                        <tr v-for="autor in filteredAutores" :key="autor.id" class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-semibold text-gray-900">{{ autor.nome }}</div>
                             </td>
@@ -72,12 +89,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { autorService } from '../services/autorService.js';
 
 const autores = ref([]);
-const loading = ref(false);
+const loading = ref(true);
 const error = ref(null);
+const filter = ref('');
+let searchTimeout = null;
+
+const filteredAutores = computed(() => {
+    if (!filter.value) {
+        return autores.value;
+    }
+    const searchTerm = filter.value.toLowerCase();
+    return autores.value.filter(autor => 
+        autor.nome.toLowerCase().includes(searchTerm)
+    );
+});
 
 const loadAutores = async () => {
     loading.value = true;
@@ -90,6 +119,13 @@ const loadAutores = async () => {
     } finally {
         loading.value = false;
     }
+};
+
+const debounceSearch = () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        // A busca é feita via computed, não precisa fazer nada aqui
+    }, 300);
 };
 
 const deleteAutor = async (id) => {

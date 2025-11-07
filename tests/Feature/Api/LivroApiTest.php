@@ -64,7 +64,7 @@ describe('API Livros', function () {
 
         $response->assertStatus(201)
             ->assertJsonStructure([
-                'data' => ['id', 'titulo', 'editora', 'edicao', 'ano_publicacao', 'preco']
+                'data' => ['id', 'titulo', 'editora', 'edicao', 'ano_publicacao', 'preco', 'preco_value']
             ])
             ->assertJson([
                 'data' => [
@@ -72,7 +72,8 @@ describe('API Livros', function () {
                     'editora' => 'Editora Globo',
                     'edicao' => 1,
                     'ano_publicacao' => 1899,
-                    'preco' => 35.50,
+                    'preco' => 'R$ 35,50',
+                    'preco_value' => 35.50,
                 ],
             ]);
 
@@ -98,7 +99,7 @@ describe('API Livros', function () {
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => ['id', 'titulo', 'editora', 'edicao', 'ano_publicacao', 'preco']
+                'data' => ['id', 'titulo', 'editora', 'edicao', 'ano_publicacao', 'preco', 'preco_value']
             ])
             ->assertJson([
                 'data' => [
@@ -107,7 +108,8 @@ describe('API Livros', function () {
                     'editora' => 'Editora Globo',
                     'edicao' => 1,
                     'ano_publicacao' => 1899,
-                    'preco' => 35.50,
+                    'preco' => 'R$ 35,50',
+                    'preco_value' => 35.50,
                 ],
             ]);
     });
@@ -150,7 +152,8 @@ describe('API Livros', function () {
                     'editora' => 'Editora Nova',
                     'edicao' => 2,
                     'ano_publicacao' => 1900,
-                    'preco' => 40.00,
+                    'preco' => 'R$ 40,00',
+                    'preco_value' => 40.00,
                 ],
             ]);
     });

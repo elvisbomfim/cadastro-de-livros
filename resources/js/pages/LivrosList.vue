@@ -31,6 +31,42 @@
                 </div>
             </div>
 
+            <!-- Notificação -->
+            <transition
+                enter-active-class="transition ease-out duration-300"
+                enter-from-class="opacity-0 translate-y-2"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition ease-in duration-200"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 translate-y-2"
+            >
+                <div
+                    v-if="notification.show"
+                    :class="{
+                        'bg-blue-50 border-blue-200 text-blue-800': notification.type === 'info',
+                        'bg-green-50 border-green-200 text-green-800': notification.type === 'success',
+                        'bg-red-50 border-red-200 text-red-800': notification.type === 'error'
+                    }"
+                    class="fixed top-4 right-4 border px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 min-w-[300px]"
+                >
+                    <svg v-if="notification.type === 'info'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <svg v-else-if="notification.type === 'success'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="flex-1">{{ notification.message }}</p>
+                    <button @click="notification.show = false" class="text-current opacity-70 hover:opacity-100">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </transition>
+
             <div class="overflow-x-auto">
                 <div v-if="loading" class="text-center py-12">
                     <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -121,6 +157,20 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button
+                                    @click="downloadFichaLivro(livro.id)"
+                                    class="text-green-600 hover:text-green-900 disabled:text-green-400 disabled:cursor-not-allowed mr-4 transition-colors inline-flex items-center"
+                                    :disabled="downloadingFicha[livro.id]"
+                                    :title="downloadingFicha[livro.id] ? 'Gerando PDF...' : 'Baixar Ficha Detalhada'"
+                                >
+                                    <svg v-if="downloadingFicha[livro.id]" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </button>
                                 <router-link
                                     :to="`/livros/${livro.id}/editar`"
                                     class="text-blue-600 hover:text-blue-900 mr-4 transition-colors"
@@ -175,12 +225,15 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { livroService } from '../services/livroService.js';
+import { relatorioService } from '../services/relatorioService.js';
 
 const livros = ref([]);
 const loading = ref(false);
 const error = ref(null);
 const filter = ref('');
 const pagination = ref(null);
+const downloadingFicha = ref({});
+const notification = ref({ show: false, message: '', type: 'info' });
 let searchTimeout = null;
 
 const loadLivros = async (page = 1) => {
@@ -225,6 +278,35 @@ const deleteLivro = async (id) => {
 
 const changePage = (page) => {
     loadLivros(page);
+};
+
+const showNotification = (message, type = 'info') => {
+    notification.value = { show: true, message, type };
+    setTimeout(() => {
+        notification.value.show = false;
+    }, 4000);
+};
+
+const downloadFichaLivro = async (id) => {
+    try {
+        downloadingFicha.value[id] = true;
+        showNotification('Gerando ficha detalhada, aguarde...', 'info');
+        
+        const response = await relatorioService.downloadFichaLivroPdf(id);
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `ficha-livro-${id}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        
+        showNotification('Ficha detalhada gerada com sucesso!', 'success');
+    } catch (err) {
+        showNotification('Erro ao gerar ficha: ' + (err.response?.data?.message || err.message), 'error');
+    } finally {
+        downloadingFicha.value[id] = false;
+    }
 };
 
 onMounted(() => {
