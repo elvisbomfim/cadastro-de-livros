@@ -85,17 +85,58 @@
                 </table>
             </div>
         </div>
+
+        <!-- Notificação -->
+        <transition
+            enter-active-class="transition ease-out duration-300"
+            enter-from-class="opacity-0 translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition ease-in duration-200"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 translate-y-2"
+        >
+            <div
+                v-if="notification.show"
+                :class="{
+                    'bg-blue-50 border-blue-200 text-blue-800': notification.type === 'info',
+                    'bg-green-50 border-green-200 text-green-800': notification.type === 'success',
+                    'bg-red-50 border-red-200 text-red-800': notification.type === 'error'
+                }"
+                class="fixed top-4 right-4 border px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 min-w-[300px]"
+            >
+                <svg v-if="notification.type === 'info'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <svg v-else-if="notification.type === 'success'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="flex-1">{{ notification.message }}</p>
+                <button @click="notification.show = false" class="text-current opacity-70 hover:opacity-100">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </transition>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { assuntoService } from '../services/assuntoService.js';
+
+const route = useRoute();
+const router = useRouter();
 
 const assuntos = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const filter = ref('');
+const notification = ref({ show: false, message: '', type: 'info' });
 let searchTimeout = null;
 
 const filteredAssuntos = computed(() => {
@@ -135,12 +176,28 @@ const deleteAssunto = async (id) => {
     try {
         await assuntoService.delete(id);
         await loadAssuntos();
+        showNotification('Assunto excluído com sucesso!', 'success');
     } catch (err) {
         error.value = err.response?.data?.message || 'Erro ao excluir assunto';
+        showNotification('Erro ao excluir assunto', 'error');
     }
+};
+
+const showNotification = (message, type = 'info') => {
+    notification.value = { show: true, message, type };
+    setTimeout(() => {
+        notification.value.show = false;
+    }, 4000);
 };
 
 onMounted(() => {
     loadAssuntos();
+    
+    // Verifica se há mensagem de sucesso nos query params
+    if (route.query.success) {
+        showNotification(route.query.success, 'success');
+        // Remove o query param da URL
+        router.replace({ path: route.path, query: {} });
+    }
 });
 </script>

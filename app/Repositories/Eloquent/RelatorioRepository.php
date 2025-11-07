@@ -24,9 +24,9 @@ class RelatorioRepository implements RelatorioRepositoryInterface
                     COUNT(DISTINCT l.id) AS total_livros,
                     SUM(l.preco) AS valor_total,
                     AVG(l.preco) AS preco_medio
-                FROM assuntos ass
-                LEFT JOIN livro_assuntos las ON ass.id = las.assunto_id
-                LEFT JOIN livros l ON las.livro_id = l.id
+                FROM assunto ass
+                LEFT JOIN livro_assunto las ON ass.id = las.assunto_id
+                LEFT JOIN livro l ON las.livro_id = l.id
                 GROUP BY ass.id, ass.descricao
                 ORDER BY total_livros DESC
             ");
@@ -52,11 +52,11 @@ class RelatorioRepository implements RelatorioRepositoryInterface
                     GROUP_CONCAT(DISTINCT ass.descricao) AS assuntos,
                     COUNT(DISTINCT a.id) AS total_autores,
                     COUNT(DISTINCT ass.id) AS total_assuntos
-                FROM livros l
-                LEFT JOIN livro_autors la ON l.id = la.livro_id
-                LEFT JOIN autors a ON la.autor_id = a.id
-                LEFT JOIN livro_assuntos las ON l.id = las.livro_id
-                LEFT JOIN assuntos ass ON las.assunto_id = ass.id
+                FROM livro l
+                LEFT JOIN livro_autor la ON l.id = la.livro_id
+                LEFT JOIN autor a ON la.autor_id = a.id
+                LEFT JOIN livro_assunto las ON l.id = las.livro_id
+                LEFT JOIN assunto ass ON las.assunto_id = ass.id
                 WHERE l.id = ?
                 GROUP BY l.id, l.titulo, l.editora, l.edicao, l.ano_publicacao, l.preco
             ", [$id]);
@@ -86,11 +86,11 @@ class RelatorioRepository implements RelatorioRepositoryInterface
                     AVG(l.preco) AS preco_medio,
                     MIN(l.ano_publicacao) AS primeiro_livro_ano,
                     MAX(l.ano_publicacao) AS ultimo_livro_ano
-                FROM autors a
-                LEFT JOIN livro_autors la ON a.id = la.autor_id
-                LEFT JOIN livros l ON la.livro_id = l.id
-                LEFT JOIN livro_assuntos las ON l.id = las.livro_id
-                LEFT JOIN assuntos ass ON las.assunto_id = ass.id
+                FROM autor a
+                LEFT JOIN livro_autor la ON a.id = la.autor_id
+                LEFT JOIN livro l ON la.livro_id = l.id
+                LEFT JOIN livro_assunto las ON l.id = las.livro_id
+                LEFT JOIN assunto ass ON las.assunto_id = ass.id
                 GROUP BY a.id, a.nome
                 ORDER BY total_livros DESC, a.nome
             ");

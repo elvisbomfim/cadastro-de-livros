@@ -244,10 +244,19 @@ const assuntos = ref([]);
 
 let autoresLoaded = false;
 let assuntosLoaded = false;
+let livroLoaded = false;
 
 const checkInitialLoading = () => {
-    if (!isEdit.value && autoresLoaded && assuntosLoaded) {
-        initialLoading.value = false;
+    if (isEdit.value) {
+        // Em modo de edição, precisa carregar livro, autores e assuntos
+        if (livroLoaded && autoresLoaded && assuntosLoaded) {
+            initialLoading.value = false;
+        }
+    } else {
+        // Em modo de criação, só precisa carregar autores e assuntos
+        if (autoresLoaded && assuntosLoaded) {
+            initialLoading.value = false;
+        }
     }
 };
 
@@ -283,7 +292,7 @@ const loadAssuntos = async () => {
 
 const loadLivro = async () => {
     if (!isEdit.value) {
-        // Em modo de criação, espera autores e assuntos serem carregados
+        // Em modo de criação, não precisa carregar livro
         return;
     }
     
@@ -300,14 +309,13 @@ const loadLivro = async () => {
             autores: livro.autores ? livro.autores.map(a => a.id) : [],
             assuntos: livro.assuntos ? livro.assuntos.map(a => a.id) : [],
         };
+        livroLoaded = true;
     } catch (err) {
         error.value = err.response?.data?.message || 'Erro ao carregar livro';
+        livroLoaded = true; // Marcar como carregado mesmo em caso de erro para não travar o loading
     } finally {
         loading.value = false;
-        // Em modo de edição, desativa loading quando livro for carregado
-        if (autoresLoaded && assuntosLoaded) {
-            initialLoading.value = false;
-        }
+        checkInitialLoading();
     }
 };
 
@@ -319,10 +327,11 @@ const submit = async () => {
     try {
         if (isEdit.value) {
             await livroService.update(route.params.id, form.value);
+            router.push({ path: '/livros', query: { success: 'Livro atualizado com sucesso!' } });
         } else {
             await livroService.create(form.value);
+            router.push({ path: '/livros', query: { success: 'Livro criado com sucesso!' } });
         }
-        router.push('/livros');
     } catch (err) {
         if (err.response?.status === 422) {
             const message = err.response.data.message;

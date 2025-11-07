@@ -224,8 +224,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { livroService } from '../services/livroService.js';
 import { relatorioService } from '../services/relatorioService.js';
+
+const route = useRoute();
+const router = useRouter();
 
 const livros = ref([]);
 const loading = ref(false);
@@ -271,8 +275,10 @@ const deleteLivro = async (id) => {
     try {
         await livroService.delete(id);
         await loadLivros(pagination.value?.current_page || 1);
+        showNotification('Livro excluído com sucesso!', 'success');
     } catch (err) {
         error.value = err.response?.data?.message || 'Erro ao excluir livro';
+        showNotification('Erro ao excluir livro', 'error');
     }
 };
 
@@ -311,5 +317,12 @@ const downloadFichaLivro = async (id) => {
 
 onMounted(() => {
     loadLivros();
+    
+    // Verifica se há mensagem de sucesso nos query params
+    if (route.query.success) {
+        showNotification(route.query.success, 'success');
+        // Remove o query param da URL
+        router.replace({ path: route.path, query: {} });
+    }
 });
 </script>
