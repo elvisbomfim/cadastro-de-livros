@@ -371,7 +371,7 @@ php artisan test
 
 ## 📝 Licença
 
-Este projeto é privado e de uso pessoal.
+Este projeto foi desenvolvido como um teste para demonstrar conhecimentos em desenvolvimento web. É livre e de código aberto. Sinta-se à vontade para usar, modificar e distribuir conforme necessário.
 
 ## 👤 Autor
 
