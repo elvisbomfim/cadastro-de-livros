@@ -58,12 +58,90 @@ app/
 ## 📦 Instalação
 
 ### Pré-requisitos
-- PHP 8.2+
-- Composer
-- Node.js 18+
-- MySQL 8.0+
+- **Docker** e **Docker Compose** (recomendado)
+- **Node.js e npm** (instalados localmente na máquina, não no container)
+  - Recomendado usar **NVM** (Node Version Manager) para gerenciar versões
+  - Node.js 20.19.4+ (testado com v20.19.4)
+  - npm 10.8.2+ (testado com 10.8.2)
+- OU instalação local completa: 
+  - PHP 8.3.25+ (testado com 8.3.25)
+  - Composer
+  - Node.js 20.19.4+ (testado com v20.19.4)
+  - npm 10.8.2+ (testado com 10.8.2)
+  - MySQL 8.4+ (testado com 8.4)
 
-### Passos
+### Instalação com Docker (Recomendado)
+
+1. **Instale o Node.js localmente (recomendado usar NVM)**
+
+   **Instalando o NVM:**
+   ```bash
+   # Linux/Mac
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+   
+   # Windows (use nvm-windows)
+   # Baixe de: https://github.com/coreybutler/nvm-windows/releases
+   ```
+
+   **Instalando Node.js com NVM:**
+   ```bash
+   nvm install 20.19.4
+   nvm use 20.19.4
+   nvm alias default 20.19.4
+   ```
+
+   **Verificando instalação:**
+   ```bash
+   node -v  # Deve mostrar v20.19.4
+   npm -v   # Deve mostrar 10.8.2+
+   ```
+
+2. **Clone o repositório**
+```bash
+git clone https://github.com/elvisbomfim/cadastro-de-livros.git
+cd cadastro-de-livros
+```
+
+3. **Configure o ambiente (se necessário)**
+```bash
+cp .env.example .env
+```
+
+4. **Execute o script de inicialização**
+```bash
+chmod +x start.sh
+./start.sh
+```
+
+O script `start.sh` irá:
+- ✅ Iniciar todos os containers (app, nginx, mysql, redis)
+- ✅ Instalar dependências do Composer (dentro do container)
+- ✅ Instalar dependências do NPM (localmente na sua máquina)
+- ✅ Gerar a chave da aplicação
+- ✅ Executar as migrations automaticamente
+
+5. **Acesse a aplicação**
+- Frontend: http://localhost:8080
+- API: http://localhost:8080/api
+
+6. **Execute os seeders (opcional)**
+```bash
+docker-compose exec app php artisan db:seed
+```
+
+7. **Compile os assets (desenvolvimento)**
+```bash
+# Execute localmente (não dentro do container)
+npm run dev
+```
+
+8. **Compile os assets (produção)**
+```bash
+# Execute localmente (não dentro do container)
+npm run build
+```
+
+### Instalação Local (sem Docker)
 
 1. **Clone o repositório**
 ```bash
@@ -123,6 +201,16 @@ php artisan serve
 
 Execute os testes com Pest:
 
+### Com Docker
+```bash
+# Todos os testes
+docker-compose exec app php artisan test
+
+# Testes específicos
+docker-compose exec app php artisan test --filter NomeDoTeste
+```
+
+### Sem Docker
 ```bash
 # Todos os testes
 php artisan test
@@ -173,16 +261,82 @@ O sistema utiliza:
 
 ### Estrutura de Commits
 
-O projeto segue o padrão **Conventional Commits**:
+O projeto segue o padrão **Conventional Commits** e utiliza ferramentas para garantir a conformidade:
+
+#### Tipos de Commit
+
+- `feat`: Nova funcionalidade
+- `fix`: Correção de bug
+- `docs`: Documentação
+- `style`: Formatação, ponto e vírgula faltando, etc
+- `refactor`: Refatoração de código
+- `perf`: Melhoria de performance
+- `test`: Adicionando testes
+- `build`: Mudanças no sistema de build
+- `ci`: Mudanças na CI
+- `chore`: Mudanças no processo de build ou ferramentas auxiliares
+- `revert`: Reverter um commit
+
+#### Formato
 
 ```
-feat(escopo): descrição da funcionalidade
-fix(escopo): descrição da correção
-docs(escopo): atualização de documentação
+<tipo>[escopo opcional]: <descrição>
+
+[corpo opcional]
+
+[rodapé opcional]
 ```
+
+#### Exemplos
+
+```bash
+feat(relatorio): implementa sistema de relatórios em PDF
+fix(api): corrige validação de dados no endpoint de livros
+docs(readme): atualiza instruções de instalação
+refactor(repository): melhora estrutura do RelatorioRepository
+```
+
+#### Usando Commitizen (Recomendado)
+
+Para facilitar a criação de commits no padrão, use o Commitizen:
+
+```bash
+npm run commit
+```
+
+Isso abrirá um assistente interativo para criar commits seguindo o padrão Conventional Commits.
+
+#### Validação Automática
+
+O projeto utiliza **Husky** e **Commitlint** para validar automaticamente os commits. Se um commit não seguir o padrão, ele será rejeitado com uma mensagem de erro explicativa.
 
 ### Scripts Disponíveis
 
+#### Com Docker
+```bash
+# Desenvolvimento frontend (execute localmente)
+npm run dev
+
+# Build de produção (execute localmente)
+npm run build
+
+# Testes (dentro do container)
+docker-compose exec app php artisan test
+
+# Acessar container
+docker-compose exec app bash
+
+# Ver logs
+docker-compose logs -f
+
+# Parar containers
+docker-compose down
+
+# Reiniciar containers
+docker-compose restart
+```
+
+#### Sem Docker
 ```bash
 # Desenvolvimento frontend
 npm run dev
@@ -193,6 +347,8 @@ npm run build
 # Testes
 php artisan test
 ```
+
+> **Nota:** Versões testadas: PHP 8.3.25, Node.js v20.19.4, npm 10.8.2 e MySQL 8.4
 
 ## 📝 Licença
 
